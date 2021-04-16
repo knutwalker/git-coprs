@@ -1,0 +1,17 @@
+[package]
+name = "git-coprs"
+version = "0.1.0"
+description = "List open Github PRs and select one to checkout via fzf."
+authors = ["Paul Horn <developer@knutwalker.de>"]
+edition = "2018"
+license = "MIT OR Apache-2.0"
+homepage = "https://github.com/knutwalker/dotfiles/"
+repository = "https://github.com/knutwalker/dotfiles/"
+categories = ["command-line-utilities"]
+keywords = ["git", "shell", "github", "fzf"]
+
+[dependencies]
+atoi = "0.4.0"
+humantime = "2.1.0"
+pico-args = "0.4.0"
+serde_json = "1.0.64"
