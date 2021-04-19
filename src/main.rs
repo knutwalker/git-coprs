@@ -344,6 +344,7 @@ where
                 .into_iter()
                 .flat_map(|q| IntoIter::new(["--query", q])),
         )
+        .arg("--select-1")
         .stdin(Stdio::piped())
         .stdout(Stdio::piped())
         .stderr(Stdio::inherit())
