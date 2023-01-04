@@ -1,6 +1,7 @@
 # git-coprs
 
 Checkout a Github PR with fuzzy selection
+
 Requires the following binaries:
   - https://github.com/cli/cli
   - https://github.com/junegunn/fzf
@@ -23,6 +24,12 @@ Alternatively, install via cargo
 ```
 cargo install --locked --git https://github.com/knutwalker/git-coprs
 ```
+
+
+## MSRV
+
+This crate requires at least Rust `1.57.0`.
+
 
 # Usage
 

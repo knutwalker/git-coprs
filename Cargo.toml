@@ -9,6 +9,7 @@ homepage = "https://github.com/knutwalker/dotfiles/"
 repository = "https://github.com/knutwalker/dotfiles/"
 categories = ["command-line-utilities"]
 keywords = ["git", "shell", "github", "fzf"]
+rust-version = "1.57.0"
 
 [dependencies]
 atoi = "0.4.0"
