@@ -45,7 +45,6 @@
 //!
 //! Otherwise, the gh api is queried for the user that is authenticated.
 
-use humantime;
 use serde_json::Value;
 use std::{
     array::IntoIter,
@@ -61,7 +60,7 @@ fn num(pr: &Value) -> u64 {
     pr.as_u64().expect("number")
 }
 
-fn string<'a>(pr: &'a Value) -> &'a str {
+fn string(pr: &Value) -> &str {
     pr.as_str().expect("string")
 }
 
@@ -137,8 +136,8 @@ impl Display for Preview<'_> {
             nl = PREVIEW_NEWLINE
         ))?;
 
-        match self.0["labels"].as_array() {
-            Some(labels) => match labels.split_first() {
+        if let Some(labels) = self.0["labels"].as_array() {
+            match labels.split_first() {
                 None => {}
                 Some((label, &[])) => {
                     write!(f, "Label: {}", Label(label))?;
@@ -149,8 +148,7 @@ impl Display for Preview<'_> {
                         write!(f, ", {}", Label(label))?;
                     }
                 }
-            },
-            None => {}
+            }
         };
 
         if matches!(self.0["draft"].as_bool(), Some(true)) {
@@ -193,7 +191,7 @@ impl Display for Preview<'_> {
             nl = PREVIEW_NEWLINE,
         ))?;
 
-        if let Some(reviewer) = string_opt(&self.0, "/assignee/login") {
+        if let Some(reviewer) = string_opt(self.0, "/assignee/login") {
             f.write_fmt(format_args!(
                 "Reviewer: {reviewer}{nl}",
                 reviewer = PreviewBold(reviewer),
@@ -384,7 +382,7 @@ fn run() -> Result<(), Box<dyn std::error::Error + 'static>> {
     let me = args
         .opt_value_from_str("--me")?
         .or_else(|| option_env!("GH_USER").map(String::from))
-        .or_else(|| get_me());
+        .or_else(get_me);
     let me = me.as_deref();
 
     let query: Option<String> = args.opt_free_from_str()?;
@@ -394,7 +392,7 @@ fn run() -> Result<(), Box<dyn std::error::Error + 'static>> {
     let mut pulls = serde_json::from_slice::<Vec<Value>>(&pulls)?;
     pulls.sort_by_cached_key(|pr| SortKey::new(pr, me));
 
-    if let Some(number) = fzf_select(pulls.into_iter().map(|p| FullLine(p)), query) {
+    if let Some(number) = fzf_select(pulls.into_iter().map(FullLine), query) {
         let cmd = format!("gh pr checkout {}", number);
         let _ = exec(cmd.split_ascii_whitespace())?;
     }
