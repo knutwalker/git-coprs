@@ -284,7 +284,7 @@ impl Ord for SortKey {
 }
 
 fn get_me() -> Option<String> {
-    let user = crate::gh_api("user").ok()?;
+    let user = crate::gh_api(["user"]).ok()?;
     let mut user = serde_json::from_slice::<Value>(&user).ok()?;
     let user = user.get_mut("login")?.take();
     match user {
@@ -313,8 +313,8 @@ where
     Ok(output.stdout)
 }
 
-fn gh_api(api: &str) -> std::io::Result<Vec<u8>> {
-    exec(["gh", "api"].iter().copied().chain(std::iter::once(api)))
+fn gh_api<const N: usize>(api: [&str; N]) -> std::io::Result<Vec<u8>> {
+    exec(["gh", "api"].iter().copied().chain(api))
 }
 
 fn fzf_select<II>(items: II, query: Option<&str>) -> Option<u64>
@@ -383,7 +383,7 @@ fn run() -> Result<(), Box<dyn std::error::Error + 'static>> {
     let query: Option<String> = args.opt_free_from_str()?;
     let query = query.as_deref();
 
-    let pulls = crate::gh_api("repos/:owner/:repo/pulls")?;
+    let pulls = crate::gh_api(["--paginate", "repos/:owner/:repo/pulls"])?;
     let mut pulls = serde_json::from_slice::<Vec<Value>>(&pulls)?;
     pulls.sort_by_cached_key(|pr| SortKey::new(pr, me));
 
