@@ -47,7 +47,6 @@
 
 use serde_json::Value;
 use std::{
-    array::IntoIter,
     cmp::Ordering,
     ffi::OsStr,
     fmt::Display,
@@ -315,7 +314,7 @@ where
 }
 
 fn gh_api(api: &str) -> std::io::Result<Vec<u8>> {
-    exec(IntoIter::new(["gh", "api"]).chain(std::iter::once(api)))
+    exec(["gh", "api"].iter().copied().chain(std::iter::once(api)))
 }
 
 fn fzf_select<II>(items: II, query: Option<&str>) -> Option<u64>
@@ -325,23 +324,19 @@ where
 {
     let mut fzf_process = Command::new("fzf")
         .arg("--exact")
-        .args(&["--with-nth", "1"])
-        .args(&["--delimiter", "\t"])
+        .args(["--with-nth", "1"])
+        .args(["--delimiter", "\t"])
         .arg("--no-sort")
         .arg("--tac")
-        .args(&["--bind", "?:toggle-preview"])
-        .args(&["--bind", "esc:cancel"])
-        .args(&["--layout", "reverse"])
-        .args(&["--info", "inline"])
-        .args(&["--prompt", " "])
+        .args(["--bind", "?:toggle-preview"])
+        .args(["--bind", "esc:cancel"])
+        .args(["--layout", "reverse"])
+        .args(["--info", "inline"])
+        .args(["--prompt", " "])
         .arg("--ansi")
-        .args(&["--preview", "echo -e {2}"])
-        .args(&["--preview-window", "up"])
-        .args(
-            query
-                .into_iter()
-                .flat_map(|q| IntoIter::new(["--query", q])),
-        )
+        .args(["--preview", "echo -e {2}"])
+        .args(["--preview-window", "up"])
+        .args(query.into_iter().flat_map(|q| ["--query", q]))
         .arg("--select-1")
         .stdin(Stdio::piped())
         .stdout(Stdio::piped())
